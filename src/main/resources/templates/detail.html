@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+
+
+<body>
+<!--왜 히든 해서 보드 디테일의 아이디 가져오지????????????????????-->
+<input type="hidden" id="boardId" th:value="${boardDetail.id}">
+<h2 th:text="${boardDetail.title}">제목</h2>
+<p th:text="${boardDetail.name}">작성자</p>
+<p th:text="${boardDetail.contents}">내용</p>
+<p th:inline="text">작성일 : [[${#temporals.format(boardDetail.createdAt, 'yyyy-MM-dd HH:mm')}]]</p>
+<!--    <p th:text="${#temporals.format(boardDetail.createdAt, 'yyyy-MM-dd HH:mm')}">작성시간</p>-->
+<p></p>
+<a th:href="@{/}">목록</a>
+<input type="button" value="삭제" onclick="deleteBoard()">
+
+<!--    댓글목록-->
+<!--ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ-->
+<!--<table border="1">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>번호</th>-->
+<!--        <th>내용</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    <tr id="reply-area" th:each="reply : ${replyList}">-->
+<!--        <td type="hidden" th:value="${reply.id}" th:id="${reply.id}"></td>-->
+<!--        <td>-->
+<!--            <a th:href="@{'/detail/' + ${board.id}}">-->
+<!--                <span th:text="${board.title}"></span>-->
+<!--            </a>-->
+<!--        </td>-->
+<!--        <td th:text="${board.name}"></td>-->
+<!--        <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--</table>-->
+<!--ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ-->
+<div id="reply-area" th:each="reply : ${replyList}">
+    <div id="reply-div">
+        <input type="hidden" th:value="${reply.id}" th:id="${reply.id}">
+        <input type="text" th:value="${reply.contents}">
+    </div>
+
+</div>
+
+<!--댓글 작성-->
+<div>
+
+    댓글<br>
+
+    <textarea name="contents" id="contents"></textarea><br>
+    <input type="button" value="등록" onclick="writeReply()">
+</div>
+
+<script>
+    //게시글 삭제
+    function deleteBoard(){
+        var url = "/api/boards/" + $("#boardId").val();
+        $.ajax({
+            type: "DELETE",
+            url: url,
+            success: function (responce){
+                alert('삭제 완료');
+                window.location.href = '/'
+            }
+        })
+    }
+
+    //댓글 작성
+    function writeReply(){
+        let contents = $('#contents').val();
+        let boardId = $('#boardId').val();
+        var url = '/api/boards/' + boardId + '/reply';
+        if (contents == "") {
+            alert("댓글을 입력해주세요")
+            return;
+        }
+
+        let data = {"contents":contents};
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (response){
+                alert("댓글이 게시되었습니다");
+                window.location.reload(); // 클라이언트 사이드 랜더링 새로고침필요없는데?????????????????????
+
+                // todo 댓글 영역에 댓글 추가하는 작업 필요
+            }
+        })
+
+
+    }
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+<script>
+    function writeBoard(){
+        var info = {
+            "title" : $("#title").val(),
+            "name" : $("#name").val(),
+            "contents" : $("#contents").val()
+        };
+
+        $.ajax({
+            type : "POST",
+            url : "/api/boards",
+            data : JSON.stringify(info),
+            contentType: "application/json",
+            success: function (response) {
+                alert('등록 완료!');
+                window.location.href = '/'
+            }
+        });
+    }
+
+</script>
+
+<body>
+<div>
+    제목 : <input type="text" name="title" id="title"> <br>
+    작성자 : <input type="text" name="name" id="name"> <br>
+    <textarea name="contents" id="contents"></textarea><br>
+
+    <input type="button" value="등록" onclick="writeBoard()">
+    <input type="button" value="리스트" onclick="location.href='/'">
+</div>
+</body>
+</html>
